@@ -11,6 +11,12 @@ int findMax(int num1, int num2) {
     }
 }
 
+int findMax(int num1, int num2, int num3) {
+    int Max=findMax(num1, num2);
+    Max=findMax(Max, num3);
+    return Max;
+}
+
 int addAll(vector<int> nums) {
     int total=0;
     for (int i=0; i<nums.size(); i++) {
@@ -76,5 +82,10 @@ int main() {
     cout<<factorial(3)<<endl;
     cout<<factorial(2)<<endl;
     cout<<factorial(1)<<endl;
+
+    cout<<"findMax"<<endl;
+    cout<<findMax(4, 7, 10)<<endl;
+    cout<<findMax(11, 100, 10)<<endl;
+    cout<<findMax(6, 2, 3)<<endl;
     return 0;
 }
