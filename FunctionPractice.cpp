@@ -38,6 +38,13 @@ char calculateGrade(float grade) {
         
 }
 
+int factorial(int num) {
+    if (num==1) {
+        return 1;
+    } 
+    return num*factorial(num-1);
+}
+
 int main() {
     cout<<"findMax"<<endl;
     cout<<findMax(4, 5)<<endl;
@@ -62,5 +69,12 @@ int main() {
     cout<<fToC(89)<<endl;
     cout<<fToC(111)<<endl;
     cout<<fToC(44.4)<<endl;
+
+    cout<<"factorial"<<endl;
+    cout<<factorial(5)<<endl;
+    cout<<factorial(4)<<endl;
+    cout<<factorial(3)<<endl;
+    cout<<factorial(2)<<endl;
+    cout<<factorial(1)<<endl;
     return 0;
 }
