@@ -4,6 +4,27 @@
 #include <limits>
 using namespace std;
 
+class Animal {
+    int height;
+    string name;
+    bool isHealthy;
+
+    
+
+    public:
+    Animal() {
+        
+    }
+    int getAge() {
+        return height / 3;
+    }
+
+    void printName() {
+        cout << name << endl;
+    }
+
+};
+
 int main() {
     std::vector<std::string> catalog;
 
@@ -73,4 +94,6 @@ int main() {
     // for (int i=0; i < sizeof(numbers)/sizeof(numbers[0]); i++){
     //     std::cout<<numbers[i]<<std::endl;
     // }
+
+    Animal * dog = new Animal();
 }
