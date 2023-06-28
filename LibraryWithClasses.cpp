@@ -46,10 +46,18 @@ class Catalog {
                 if (books[i]->getTitle()==title) {
                     books.erase(books.begin()+i);
                     return i;
-                } else if (i==books.size()-1) {
-                    return -1;
                 }
-            }
+            } 
+            return -1;
+        }
+
+        int searchBook(string title) {
+            for (int i=0; i<books.size(); i++) {
+                if (books[i]->getTitle()==title) {
+                    return i;
+                }
+            } 
+            return -1;
         }
 
         string listBooks() {
@@ -62,17 +70,25 @@ class Catalog {
             return ss.str();
         }
 
+
+
     private:
         vector<Book * > books;
 };
 
-
+enum Action {
+    ADD_BOOK = 1,
+    REMOVE_BOOK = 2,
+    SEARCH_BOOK = 3,
+    LIST_BOOKS = 4,
+    EXIT = 5
+};
 
 int main() {
     Catalog * catalog = new Catalog();
 
     while(true){
-        std::cout<<"1. add a book\n2. remove a book\n3. list all books\n4. exit\n";
+        std::cout<<"1. add a book\n2. remove a book\n3. Search for a book\n4. list all books\n5. Exit\n";
         int input;
         std::string titleInput;
         int pageCountInput;
@@ -80,7 +96,7 @@ int main() {
         std::cin>>input;
         int index;
         switch (input) {
-            case 1:
+            case Action::ADD_BOOK:
                 std::cout<<"Enter title of the book: ";
                 // std::cin>>titleInput;
                 cin.ignore();
@@ -93,7 +109,7 @@ int main() {
                 catalog->addBook(new Book(titleInput, pageCountInput, chapterCountInput));
                 std::cout<<"Book has been added\n";
                 break;
-            case 2:
+            case Action::REMOVE_BOOK:
                 std::cout<<"Please give title of the book\n";
                 cin.ignore();
                 getline(cin, titleInput);
@@ -104,12 +120,23 @@ int main() {
                     cout<<"Book removed from index "<<index<<endl;
                 }
                 break;
-            case 3:
+            case Action::SEARCH_BOOK:
+                cout<<"Enter title of the book\n";
+                cin.ignore();
+                getline(cin, titleInput);
+                index = catalog->searchBook(titleInput);
+                if(index==-1) {
+                    cout<<"Book not found\n";
+                } else {
+                    cout<<"Book has been found at index "<<index<<endl;
+                }
+                break;
+            case Action::LIST_BOOKS:
                 std::cout<<"Printing all books\n";
                 cout<<catalog->listBooks();
                 std::cout<<"Finished printing books\n";
                 break;
-            case 4:
+            case Action::EXIT:
                 std::cout<<"Exited";
                 return 0;
                 break;
@@ -117,7 +144,6 @@ int main() {
                 std::cout<<"Invalid Input\n";
         };
         std::cin.clear();
-        std::cin.ignore(1000, '\n');
     }
 
     return 0;
