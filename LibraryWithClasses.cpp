@@ -4,12 +4,38 @@
 #include <string>
 using namespace std;
 
+//1. Adult books 2. Children’s books 3. Teen books 4. Media Center (CDs, DVDs, Audiobooks)
+
+enum Section {
+    ADULT,
+    CHILDREN,
+    TEEN,
+    MEDIA
+};
+
+enum Bookshelf {
+    A_TO_H,
+    I_TO_S,
+    T_TO_Z,
+    NUMBERS,
+    NONE
+};
+
 class Book {
     public:
         Book(string title, int pageCount, int chapterCount) {
             this->title = title;
             this->pageCount=pageCount;
             this->chapterCount=chapterCount;
+            if(title[0]>='a'&&title[0]<='h'&&title[0]>='A'&&title[0]<='H') {
+                bookshelf=A_TO_H;
+            } else if(title[0]>='i'&&title[0]<='s'&&title[0]>='I'&&title[0]<='S') {
+                bookshelf=I_TO_S;
+            } else if(title[0]>='t'&&title[0]<='z'&&title[0]>='T'&&title[0]<='Z') {
+                bookshelf=T_TO_Z;
+            } else {
+                bookshelf=NUMBERS;
+            }
         }
 
         string getTitle() {
@@ -24,10 +50,15 @@ class Book {
             return chapterCount;
         }
 
+        Bookshelf getBookshelf() {
+            return bookshelf;
+        }
     private:
         string title;
         int pageCount;
         int chapterCount;
+        Section section;
+        Bookshelf bookshelf;
 
 };
 
@@ -41,23 +72,23 @@ class Catalog {
             books.push_back(newBook);
         }
 
-        int removeBook(string title) {
+        bool removeBook(string title) {
             for (int i=0; i<books.size(); i++) {
                 if (books[i]->getTitle()==title) {
                     books.erase(books.begin()+i);
-                    return i;
+                    return true;
                 }
             } 
-            return -1;
+            return false;
         }
 
-        int searchBook(string title) {
+        Bookshelf searchBook(string title) {
             for (int i=0; i<books.size(); i++) {
                 if (books[i]->getTitle()==title) {
-                    return i;
+                    return books[i]->getBookshelf();
                 }
             } 
-            return -1;
+            return NONE;
         }
 
         string listBooks() {
@@ -93,8 +124,9 @@ int main() {
         std::string titleInput;
         int pageCountInput;
         int chapterCountInput;
+        bool foundBook;
         std::cin>>input;
-        int index;
+        Bookshelf bookshelf;
         switch (input) {
             case Action::ADD_BOOK:
                 std::cout<<"Enter title of the book: ";
@@ -113,22 +145,22 @@ int main() {
                 std::cout<<"Please give title of the book\n";
                 cin.ignore();
                 getline(cin, titleInput);
-                index = catalog->removeBook(titleInput);
-                if(index==-1) {
+                foundBook = catalog->removeBook(titleInput);
+                if(!foundBook) {
                     cout<<"Book not found\n";
                 } else {
-                    cout<<"Book removed from index "<<index<<endl;
+                    cout<<"Removed book"<<endl;
                 }
                 break;
             case Action::SEARCH_BOOK:
                 cout<<"Enter title of the book\n";
                 cin.ignore();
                 getline(cin, titleInput);
-                index = catalog->searchBook(titleInput);
-                if(index==-1) {
+                bookshelf = catalog->searchBook(titleInput);
+                if(bookshelf==NULL) {
                     cout<<"Book not found\n";
                 } else {
-                    cout<<"Book has been found at index "<<index<<endl;
+                    cout<<"Book has been found on bookshelf "<<bookshelf.toString()<<endl;
                 }
                 break;
             case Action::LIST_BOOKS:
