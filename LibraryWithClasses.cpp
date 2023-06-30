@@ -2,6 +2,7 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <algorithm>
 using namespace std;
 
 //1. Adult books 2. Children’s books 3. Teen books 4. Media Center (CDs, DVDs, Audiobooks)
@@ -10,8 +11,11 @@ enum Section {
     ADULT,
     CHILDREN,
     TEEN,
-    MEDIA
+    MEDIA,  
+    OTHER
 };
+
+
 
 enum Bookshelf {
     A_TO_H,
@@ -19,19 +23,69 @@ enum Bookshelf {
     T_TO_Z,
     NUMBERS,
     NONE
+
 };
 
+string toString(Section section) {
+    switch(section) {
+        case ADULT:
+            return "Adult";
+        case CHILDREN:
+            return "Children";
+        case TEEN:
+            return "Teen";
+        case MEDIA:
+            return "Media";
+        case OTHER:
+            return "Other";
+        default:
+            return NULL;
+    }
+}
+
+
+string toString(Bookshelf bookshelf) {
+    switch(bookshelf) {
+        case A_TO_H:
+            return "A to H";
+        case I_TO_S:
+            return "I to S";
+        case T_TO_Z:
+            return  "T to Z";
+        case NUMBERS:
+            return "Numbers";
+        default:
+            return NULL;
+
+    }
+
+}
 class Book {
     public:
-        Book(string title, int pageCount, int chapterCount) {
+        Book(string title, string section, int pageCount, int chapterCount) {
             this->title = title;
             this->pageCount=pageCount;
             this->chapterCount=chapterCount;
-            if(title[0]>='a'&&title[0]<='h'&&title[0]>='A'&&title[0]<='H') {
+            string sectionLower=section;
+            // TODO: add support for uppercase and lowercase section names
+            // transform(section.begin(), section.end(), sectionLower.begin(), tolower);
+            // cout<<sectionLower<<endl;
+            if(sectionLower=="adult") {
+                this->section=ADULT;
+            } else if (sectionLower=="children") {
+                this->section=CHILDREN;
+            } else if (sectionLower=="teen") {
+                this->section=TEEN;
+            } else if (sectionLower=="media") {
+                this->section=MEDIA;
+            } else {
+                this->section=OTHER;
+            }
+            if((title[0]>='a'&&title[0]<='h')||(title[0]>='A'&&title[0]<='H')) {
                 bookshelf=A_TO_H;
-            } else if(title[0]>='i'&&title[0]<='s'&&title[0]>='I'&&title[0]<='S') {
+            } else if((title[0]>='i'&&title[0]<='s')||(title[0]>='I'&&title[0]<='S')) {
                 bookshelf=I_TO_S;
-            } else if(title[0]>='t'&&title[0]<='z'&&title[0]>='T'&&title[0]<='Z') {
+            } else if((title[0]>='t'&&title[0]<='z')||(title[0]>='T'&&title[0]<='Z')) {
                 bookshelf=T_TO_Z;
             } else {
                 bookshelf=NUMBERS;
@@ -53,6 +107,11 @@ class Book {
         Bookshelf getBookshelf() {
             return bookshelf;
         }
+
+        Section getSection() {
+            return section;
+        }
+
     private:
         string title;
         int pageCount;
@@ -82,21 +141,23 @@ class Catalog {
             return false;
         }
 
-        Bookshelf searchBook(string title) {
+        Book * searchBook(string title) {
             for (int i=0; i<books.size(); i++) {
                 if (books[i]->getTitle()==title) {
-                    return books[i]->getBookshelf();
+                    return books[i];
                 }
             } 
-            return NONE;
+            return nullptr;
         }
 
         string listBooks() {
             stringstream ss;
             for (int i=0; i<books.size(); i++) {
-                ss<<"Book "<< i+1<<": "<<books[i]->getTitle()<<"\n"
+                ss<<"Book "<<i+1<<": "<<books[i]->getTitle()<<"\n"
                 <<"\tPage count: "<<books[i]->getPageCount()<<"\n"
-                <<"\tChapter count: "<<books[i]->getChapterCount()<<"\n";
+                <<"\tChapter count: "<<books[i]->getChapterCount()<<"\n"
+                <<"\tBookshelf: "<<toString(books[i]->getBookshelf())<<"\n"
+                <<"\tSection: "<<toString(books[i]->getSection())<<"\n";
             }
             return ss.str();
         }
@@ -124,9 +185,10 @@ int main() {
         std::string titleInput;
         int pageCountInput;
         int chapterCountInput;
+        string sectionInput;
         bool foundBook;
         std::cin>>input;
-        Bookshelf bookshelf;
+        Book * book;
         switch (input) {
             case Action::ADD_BOOK:
                 std::cout<<"Enter title of the book: ";
@@ -137,8 +199,11 @@ int main() {
                 std::cin>>pageCountInput;
                 std::cout<<"Enter the chapter count: ";
                 std::cin>>chapterCountInput;
+                std::cout<<"What kind of book is "<<titleInput<<"? ";
+                cin.ignore();
+                getline(cin, sectionInput);
                 // Book * newBook = new Book(titleInput, pageCountInput, chapterCountInput);
-                catalog->addBook(new Book(titleInput, pageCountInput, chapterCountInput));
+                catalog->addBook(new Book(titleInput, sectionInput, pageCountInput, chapterCountInput));
                 std::cout<<"Book has been added\n";
                 break;
             case Action::REMOVE_BOOK:
@@ -156,11 +221,11 @@ int main() {
                 cout<<"Enter title of the book\n";
                 cin.ignore();
                 getline(cin, titleInput);
-                bookshelf = catalog->searchBook(titleInput);
-                if(bookshelf==NULL) {
-                    cout<<"Book not found\n";
+                book = catalog->searchBook(titleInput);
+                if(book) {
+                    cout<<"Book has been found on bookshelf "<<toString(book->getBookshelf())<<" in section "<<toString(book->getSection())<<endl;
                 } else {
-                    cout<<"Book has been found on bookshelf "<<bookshelf.toString()<<endl;
+                    cout<<"Book not found\n";
                 }
                 break;
             case Action::LIST_BOOKS:
