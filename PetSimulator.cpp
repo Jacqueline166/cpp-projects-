@@ -45,6 +45,10 @@ class Pet {
             return ss.str();
         }
 
+        string getName() {
+            return name;
+        }
+
         void sleep() {
 
         }
@@ -123,20 +127,76 @@ class Player {
 
 };
 
+class PetStore {
+    private:
+        vector<Pet*> petStore;
+    public:
+        PetStore() {
+            Pet * dog1 = new Dog("Duke");
+            petStore.push_back(dog1);
+        }
+        
+        Pet * findPetByName(string petName) {
+            for(int i=0; i<petStore.size(); i++) {
+                if(petStore[i]->getName()==petName) {
+                    return petStore[i];
+                } 
+            } 
+            return nullptr;
+        }
+
+        string listAllPets() {
+            stringstream ss;
+            for(int i=0; i<petStore.size(); i++) {
+                ss<<"Pet "<<i+1<<endl
+                <<petStore[i]->getStatus()<<endl<<endl;
+            } 
+            return ss.str();
+        }
+};
+
+
+
 int main() {
     Player  player;
-    Pet * dog = new Dog("Max");
-    dog->eat();
-    cout<<dog->getStatus();
-    ((Dog *) dog)->pet();
-    cout<<dog->getStatus();
-    player.adoptPet(dog);
-    ((Dog *) player.getFirstPet())->pet();
+    PetStore * petStore = new PetStore();
+    // Pet * dog = new Dog("Max");
+    // dog->eat();
+    // cout<<dog->getStatus();
+    // ((Dog *) dog)->pet();
+    // cout<<dog->getStatus();
+    // player.adoptPet(dog);
+    // ((Dog *) player.getFirstPet())->pet();
 
-    Pet * fish = new Fish("Otto");
-    player.adoptPet(fish);
-    ((Fish *) player.getSecondPet())->cleanTank();
-    cout<<player.getSecondPet()->getStatus();
+    // Pet * fish = new Fish("Otto");
+    // player.adoptPet(fish);
+    // ((Fish *) player.getSecondPet())->cleanTank();
+    // cout<<player.getSecondPet()->getStatus();
+
+
 
     // TODO: create game loop that allows player to adopt pets and do things with them
+    int action;
+    cout<<"What would you like to do?"<<endl;
+    cout<<"1. Adopt a new pet"<<endl
+    <<">> ";
+    cin>>action;
+    string petName;
+    Pet * newPet;
+
+    switch (action) {
+        case 1: //adopting a pet
+            cout<<petStore->listAllPets()<<endl;
+            cout<<"Which pet would you like to adopt? ";
+            cin>>petName;
+            newPet = petStore->findPetByName(petName);
+            if(newPet) {
+                cout<<"Adopting pet "<<petName<<endl;
+
+            } else{
+                cout<<"Could not find pet"<<endl;
+            }
+            break;
+        default:;
+    }  
 }
